@@ -20,7 +20,9 @@ extern EFI_GRAPHICS_OUTPUT_PROTOCOL           *gGop;
 extern EFI_GRAPHICS_OUTPUT_MODE_INFORMATION   *gGopInfo;
 
 BOOLEAN
-InitGfx();
+InitGfx(
+  VOID
+);
 
 BOOLEAN
 DrawRectangle(
@@ -43,6 +45,8 @@ DrawBmp(
 );
 
 VOID
-CleanupBmpCache();
+CleanupBmpCache(
+  VOID
+);
 
 #endif // __GRAPHICS_H__

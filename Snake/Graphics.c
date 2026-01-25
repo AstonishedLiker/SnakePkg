@@ -28,7 +28,9 @@ STATIC BMP_CACHE_ENTRY mBmpCache[BMP_CACHE_SIZE];
 STATIC UINTN           mBmpCacheCount = 0;
 
 BOOLEAN
-InitGfx()
+InitGfx(
+  VOID
+)
 {
   EFI_STATUS Status;
 
@@ -96,7 +98,7 @@ STATIC
 BMP_CACHE_ENTRY *
 FindBmpInCache (
   IN VOID *BmpPointer
-  )
+)
 {
   for (UINTN i = 0; i < mBmpCacheCount; i++) {
     if (mBmpCache[i].BmpPointer == BmpPointer) {
@@ -114,7 +116,7 @@ AddBmpToCache (
   IN UINTN                         BltBufferSize,
   IN UINTN                         Width,
   IN UINTN                         Height
-  )
+)
 {
   // For the amount of images I have, I don't want to implement any eviction algorithm... Would be overengineering.
   if (mBmpCacheCount >= BMP_CACHE_SIZE) {
@@ -206,7 +208,7 @@ DrawBmp(
 VOID
 CleanupBmpCache (
   VOID
-  )
+)
 {
   for (UINTN i = 0; i < mBmpCacheCount; i++) {
     if (mBmpCache[i].BltBuffer != NULL) {
