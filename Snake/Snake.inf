@@ -1,0 +1,27 @@
+[Defines]
+  INF_VERSION            = 1.25
+  BASE_NAME              = Snake
+  FILE_GUID              = 125FBE2E-8095-484D-BB6F-465262530D87
+  MODULE_TYPE            = UEFI_APPLICATION
+  VERSION_STRING         = 1.0
+  ENTRY_POINT            = UefiMain
+
+[Sources]
+  Assets/Logo.bmp.h
+  BmpSupport.h
+  Graphics.h
+  Graphics.c
+  Snake.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[Protocols]
+  gEfiGraphicsOutputProtocolGuid ## CONSUMES # For graphics
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseMemoryLib

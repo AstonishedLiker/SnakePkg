@@ -1,0 +1,16 @@
+[Defines]
+  DEC_SPECIFICATION              = 0x00010005
+  PACKAGE_NAME                   = SnakePkg
+  PACKAGE_GUID                   = AF843C4E-7BB1-4193-B079-F7D4DD41CDFE
+  PACKAGE_VERSION                = 1.0
+
+[Includes]
+  Include
+
+[LibraryClasses]
+
+[Guids]
+
+[Protocols]
+
+[Ppis]
