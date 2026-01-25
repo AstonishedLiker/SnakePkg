@@ -46,7 +46,7 @@ git clone https://github.com/tianocore/edk2.git
 cd edk2
 git submodule update --init # cf. https://github.com/tianocore/edk2/tree/master?tab=readme-ov-file#submodules
 
-git clone https://github.com/YourUsername/SnakePkg.git
+git clone https://github.com/AstonishedLiker/SnakePkg.git
 ```
 
 ### 2. Build and Run
