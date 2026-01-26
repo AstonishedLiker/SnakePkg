@@ -53,9 +53,12 @@ elif [ -f "/usr/share/ovmf/${OVMF_ARCH}/OVMF_CODE.4m.fd" ]; then
     OVMF_CODE="/usr/share/ovmf/${OVMF_ARCH}/OVMF_CODE.4m.fd"
     OVMF_VARS="/usr/share/ovmf/${OVMF_ARCH}/OVMF_VARS.4m.fd"
     USE_SPLIT=true
+elif [ -f "/usr/share/OVMF/${OVMF_ARCH}/OVMF_CODE_4M.fd" ]; then
+    OVMF_CODE="/usr/share/OVMF/${OVMF_ARCH}/OVMF_CODE_4M.fd"
+    OVMF_VARS="/usr/share/OVMF/${OVMF_ARCH}/OVMF_VARS_4M.fd"
+    USE_SPLIT=true
 else
     echo "Error: OVMF firmware not found for $OVMF_ARCH!"
-    echo "Try installing: edk2-ovmf, edk2-aarch64, or edk2-arm"
     exit 1
 fi
 
