@@ -24,8 +24,8 @@ InitGfx(
   VOID
 );
 
-BOOLEAN
-DrawRectangle(
+VOID
+DrawRectangleToBackbuffer(
   IN UINT8  Red,
   IN UINT8  Green,
   IN UINT8  Blue,
@@ -36,7 +36,7 @@ DrawRectangle(
 );
 
 BOOLEAN
-DrawBmp(
+DrawBmpToBackbuffer(
   IN VOID     *BmpImage,
   IN UINTN    BmpImageLen,
   IN UINTN    DestinationX,
@@ -44,8 +44,18 @@ DrawBmp(
   IN BOOLEAN  IsAnchorMiddle
 );
 
+BOOLEAN
+PresentBackbuffer(
+  VOID
+);
+
 VOID
-CleanupBmpCache(
+ClearBackbuffer(
+  VOID
+);
+
+VOID
+DeinitGfx(
   VOID
 );
 

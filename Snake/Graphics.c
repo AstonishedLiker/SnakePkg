@@ -6,14 +6,17 @@
   SPDX-License-Identifier: MIT
 **/
 
-#include "Library/BaseMemoryLib.h"
+#include <Library/DebugLib.h>
+#include <Library/BaseMemoryLib.h>
 #include <Library/MemoryAllocationLib.h>
 
 #include "BmpSupport.h"
 #include "Graphics.h"
 
-EFI_GRAPHICS_OUTPUT_PROTOCOL           *gGop     = NULL;
-EFI_GRAPHICS_OUTPUT_MODE_INFORMATION   *gGopInfo = NULL;
+EFI_GRAPHICS_OUTPUT_PROTOCOL            *gGop           = NULL;
+EFI_GRAPHICS_OUTPUT_MODE_INFORMATION    *gGopInfo       = NULL;
+EFI_GRAPHICS_OUTPUT_BLT_PIXEL           *gBackBuffer    = NULL;
+UINTN                                   gBackBufferLen;
 
 typedef struct {
   VOID                          *BmpPointer;
@@ -46,15 +49,18 @@ InitGfx(
   }
 
   gGopInfo = gGop->Mode->Info;
-
-  ZeroMem(mBmpCache, sizeof(mBmpCache));
+  gBackBufferLen = gGopInfo->HorizontalResolution * gGopInfo->VerticalResolution;
+  gBackBuffer = AllocatePool(gBackBufferLen);
   mBmpCacheCount = 0;
+
+  ZeroMem(gBackBuffer, gBackBufferLen);
+  ZeroMem(mBmpCache, sizeof(mBmpCache));
 
   return TRUE;
 }
 
-BOOLEAN
-DrawRectangle(
+VOID
+DrawRectangleToBackbuffer(
   IN UINT8  Red,
   IN UINT8  Green,
   IN UINT8  Blue,
@@ -63,40 +69,35 @@ DrawRectangle(
   IN UINTN  DestinationX,
   IN UINTN  DestinationY
 ) {
-  EFI_STATUS                      Status;
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL   RectangleBuffer;
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL   Pixel;
+  UINTN                           y;
+  UINTN                           x;
+  UINTN                           ScreenX;
+  UINTN                           ScreenY;
 
-  RectangleBuffer = (EFI_GRAPHICS_OUTPUT_BLT_PIXEL){
+  Pixel = (EFI_GRAPHICS_OUTPUT_BLT_PIXEL){
     .Blue = Blue,
     .Green = Green,
     .Red = Red,
     .Reserved = 0
   };
 
-  Status = gGop->Blt(
-    gGop,
-    &RectangleBuffer,
-    EfiBltVideoFill,
-    0,
-    0,
-    DestinationX,
-    DestinationY,
-    Width,
-    Height,
-    0
-  );
+  for (y = 0; y < Height; y++) {
+    for (x = 0; x < Width; x++) {
+      ScreenX = DestinationX + x;
+      ScreenY = DestinationY + y;
 
-  if (EFI_ERROR(Status)) {
-    Print(L"%a: Failed to Blt: %r\n", __FUNCTION__, Status);
-    return FALSE;
+      ASSERT(ScreenX < gGopInfo->HorizontalResolution && 
+        ScreenY < gGopInfo->VerticalResolution);
+
+      gBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = Pixel;
+    }
   }
-
-  return TRUE;
 }
 
 STATIC
 BMP_CACHE_ENTRY *
-FindBmpInCache (
+FindBmpInCache(
   IN VOID *BmpPointer
 )
 {
@@ -110,7 +111,7 @@ FindBmpInCache (
 
 STATIC
 BOOLEAN
-AddBmpToCache (
+AddBmpToCache(
   IN VOID                          *BmpPointer,
   IN EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer,
   IN UINTN                         BltBufferSize,
@@ -135,7 +136,7 @@ AddBmpToCache (
 }
 
 BOOLEAN
-DrawBmp(
+DrawBmpToBackbuffer(
   IN VOID     *BmpImage,
   IN UINTN    BmpImageLen,
   IN UINTN    DestinationX,
@@ -150,6 +151,12 @@ DrawBmp(
   UINTN                         BmpWidth;
   BMP_CACHE_ENTRY               *CacheEntry;
   BOOLEAN                       FromCache;
+  UINTN                         ActualX;
+  UINTN                         ActualY;
+  UINTN                         y;
+  UINTN                         x;
+  UINTN                         ScreenX;
+  UINTN                         ScreenY;
 
   CacheEntry = FindBmpInCache(BmpImage);
 
@@ -181,21 +188,19 @@ DrawBmp(
     }
   }
 
-  Status = gGop->Blt(
-    gGop,
-    BltBuffer,
-    EfiBltBufferToVideo,
-    0,
-    0,
-    (!IsAnchorMiddle) ? DestinationX : (gGopInfo->HorizontalResolution / 2) - (BmpWidth / 2),
-    (!IsAnchorMiddle) ? DestinationY : (gGopInfo->VerticalResolution / 2) - (BmpHeight / 2),
-    BmpWidth,
-    BmpHeight,
-    0
-  );
+  ActualX = (!IsAnchorMiddle) ? DestinationX : (gGopInfo->HorizontalResolution / 2) - (BmpWidth / 2);
+  ActualY = (!IsAnchorMiddle) ? DestinationY : (gGopInfo->VerticalResolution / 2) - (BmpHeight / 2);
 
-  if (EFI_ERROR(Status)) {
-    Print(L"%a: Failed to Blt: %r\n", __FUNCTION__, Status);
+  for (y = 0; y < BmpHeight; y++) {
+    for (x = 0; x < BmpWidth; x++) {
+      ScreenX = ActualX + x;
+      ScreenY = ActualY + y;
+
+      ASSERT(ScreenX < gGopInfo->HorizontalResolution && 
+        ScreenY < gGopInfo->VerticalResolution);
+
+      gBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = BltBuffer[y * BmpWidth + x];
+    }
   }
 
   if (!FromCache) {
@@ -205,16 +210,59 @@ DrawBmp(
   return !EFI_ERROR(Status);
 }
 
-VOID
-CleanupBmpCache (
+BOOLEAN
+PresentBackbuffer(
   VOID
 )
 {
-  for (UINTN i = 0; i < mBmpCacheCount; i++) {
+  EFI_STATUS Status;
+
+  Status = gGop->Blt(
+    gGop,
+    gBackBuffer,
+    EfiBltBufferToVideo,
+    0, 0,
+    0, 0,
+    gGopInfo->HorizontalResolution, gGopInfo->VerticalResolution,
+    0
+  );
+
+  if (EFI_ERROR(Status)) {
+    Print(L"%a: Failed to Blt: %r\n", __FUNCTION__, Status);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+VOID
+ClearBackbuffer(
+  VOID
+)
+{
+  DrawRectangleToBackbuffer(
+    0, 0, 0,
+    gGopInfo->HorizontalResolution, gGopInfo->VerticalResolution,
+    0, 0
+  );
+}
+
+VOID
+DeinitGfx(
+  VOID
+)
+{
+  UINTN i;
+
+  FreePool(gBackBuffer);
+  gBackBufferLen = 0;
+
+  for (i = 0; i < mBmpCacheCount; i++) {
     if (mBmpCache[i].BltBuffer != NULL) {
       FreePool(mBmpCache[i].BltBuffer);
       mBmpCache[i].BltBuffer = NULL;
     }
   }
+
   mBmpCacheCount = 0;
 }
