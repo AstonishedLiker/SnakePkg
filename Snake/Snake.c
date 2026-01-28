@@ -41,11 +41,6 @@ UefiMain(
 
   Print(L"LoadedImage->ImageBase: 0x%p\n", LoadedImage->ImageBase);
 
-#ifdef DEBUG
-    Print(L"CpuBreakpoint()\n");
-    CpuBreakpoint();
-#endif
-
   Success = InitGfx();
   if (!Success) {
     ASSERT(!Success);
