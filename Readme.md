@@ -54,6 +54,7 @@ git clone https://github.com/AstonishedLiker/SnakePkg.git
 ```bash
 cd SnakePkg
 chmod +x run.sh build.sh
+cd ./scripts
 
 # Examples
 ./run.sh DEBUG X64
@@ -65,6 +66,7 @@ chmod +x run.sh build.sh
 
 ```bash
 # Just compile without launching QEMU
+cd ./scripts
 ./build.sh DEBUG X64
 ```
 
