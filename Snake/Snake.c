@@ -6,6 +6,8 @@
   SPDX-License-Identifier: MIT
 **/
 
+#include <Uefi.h>
+
 #include <Library/UefiLib.h>
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
@@ -22,7 +24,7 @@ UefiMain(
 {
   BOOLEAN Success;
 
-  Print(L"Initializing...");
+  Print(L"Initializing...\n");
 
   Success = InitGfx();
   if (!Success) {
@@ -30,7 +32,7 @@ UefiMain(
     return EFI_ABORTED;
   }
 
-  Print(L"Graphics initialized...");
+  Print(L"Graphics initialized...\n");
 
   DrawRectangleToBackbuffer(
     60, 60, 60,
@@ -42,7 +44,6 @@ UefiMain(
   Print(L"Gop->Mode->Mode: %d\n", gGop->Mode->Mode);
   Print(L"Info->HorizontalResolution: %d\n", gGopInfo->HorizontalResolution);
   Print(L"Info->VerticalResolution: %d\n", gGopInfo->VerticalResolution);
-  
 
   Success = DrawBmpToBackbuffer(
     LogoBmp,
