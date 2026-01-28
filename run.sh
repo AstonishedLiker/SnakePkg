@@ -83,12 +83,14 @@ if [ "$USE_SPLIT" = true ]; then
     cp "$OVMF_VARS" "$ESP_DIR/OVMF_VARS.fd"
 
     qemu-system-${QEMU_ARCH} \
+      -machine q35 \
       -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
       -drive if=pflash,format=raw,file="$ESP_DIR/OVMF_VARS.fd" \
       -drive format=raw,file=fat:rw:$ESP_DIR \
       $QEMU_COMMON $QEMU_EXTRA
 else
     qemu-system-${QEMU_ARCH} \
+      -machine q35 \
       -bios "$OVMF_CODE" \
       -drive format=raw,file=fat:rw:$ESP_DIR \
       $QEMU_COMMON $QEMU_EXTRA
