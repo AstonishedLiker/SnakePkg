@@ -15,7 +15,7 @@ def parse_image_base_from_log(log_file):
 
     with open(log_file, 'r', errors='ignore') as f:
         content = f.read()
-        pattern = re.compile(r'LoadedImage\-\>ImageBase[:\s]+0x([0-9A-Fa-f]+)+', re.IGNORECASE)
+        pattern = re.compile(r'LoadedImage\-\>ImageBase[:\s]+0x([0-9A-Fa-f]+)+\n', re.IGNORECASE)
         match = pattern.search(content)
         if match:
             return f"0x{match.group(1)}"
