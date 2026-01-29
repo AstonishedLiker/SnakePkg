@@ -15,13 +15,10 @@ def parse_image_base_from_log(log_file):
 
     with open(log_file, 'r', errors='ignore') as f:
         content = f.read()
-        pattern = re.compile(r'LoadedImage\-\>ImageBase[:\s]+([0-9A-Fa-fx]+)', re.IGNORECASE)
+        pattern = re.compile(r'LoadedImage\-\>ImageBase[:\s]+0x([0-9A-Fa-f]+)+', re.IGNORECASE)
         match = pattern.search(content)
         if match:
-            addr = match.group(1)
-            if not addr.startswith('0x'):
-                addr = f"0x{addr}"
-            return addr
+            return f"0x{match.group(1)}"
 
     return None
 
