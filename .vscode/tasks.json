@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Launch QEMU with Debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "args": ["X64", "DEBUG"],
+            "isBackground": true,
+            "options": {
+                "cwd": "${workspaceFolder}/scripts"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Starting QEMU"
+                }
+            }
+        },
+        {
+            "label": "Kill QEMU",
+            "type": "shell",
+            "command": "pkill",
+            "args": ["-9", "qemu-system"],
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "64-bit UEFI Debug App",
+            "type": "lldb-dap",
+            "request": "attach",
+            "program": "${workspaceFolder}/../Build/SnakePkg/DEBUG_GCC5/X64/SnakePkg/Snake/Snake/DEBUG/Snake.dll",
+            "preLaunchTask": "Launch QEMU with Debug",
+            "postDebugTask": "Kill QEMU",
+            "attachCommands": [
+                "gdb-remote localhost:1234"
+            ],
+            "postRunCommands": [
+                "command script import \"${workspaceFolder}/lldb_uefi_helper.py\"",
+                "continue",
+                "auto_load_symbols ${workspaceFolder}/../Build/SnakePkg/DEBUG_GCC5/X64/debug.log 10"
+            ],
+            "sourceMap": {
+                "${workspaceFolder}/../": "${workspaceFolder}/../"
+            }
+        }
+    ]
+}

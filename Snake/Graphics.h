@@ -1,4 +1,4 @@
-/**
+/** @file
   UEFI Snake Game
 
   Copyright (c) 2026 Alexis Lecam <alexis.lecam@hexaliker.fr>

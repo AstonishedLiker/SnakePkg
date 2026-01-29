@@ -14,7 +14,8 @@
   UefiBootServicesTableLib|MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   BaseMemoryLib|MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf
-  DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
+  DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
   RegisterFilterLib|MdePkg/Library/RegisterFilterLibNull/RegisterFilterLibNull.inf
@@ -29,3 +30,6 @@
     <LibraryClasses>
       NULL|MdeModulePkg/Library/BaseBmpSupportLib/BaseBmpSupportLib.inf
   }
+
+[PcdsFixedAtBuild]
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0xFF

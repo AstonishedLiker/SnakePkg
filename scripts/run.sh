@@ -71,6 +71,11 @@ cp "$BUILD_DIR/Snake.efi" "$ESP_DIR/EFI/BOOT/$BOOT_FILE"
 
 QEMU_COMMON="-m 512M -net none -vga std"
 QEMU_ACCEL="-enable-kvm"
+QEMU_DEBUG="-chardev stdio,id=char0,logfile=../../Build/SnakePkg/DEBUG_GCC5/${ARCH_TARGET}/debug.log,signal=off -serial chardev:char0 -s -S"
+
+if [ "$BUILD_TARGET" = "DEBUG" ]; then
+    QEMU_ACCEL="-accel tcg"
+fi
 
 echo "Starting QEMU ($QEMU_ARCH)..."
 
@@ -82,7 +87,7 @@ if [ "$USE_SPLIT" = true ]; then
         -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
         -drive if=pflash,format=raw,file="$ESP_DIR/OVMF_VARS.fd" \
         -drive format=raw,file=fat:rw:$ESP_DIR \
-        $QEMU_COMMON $QEMU_ACCEL
+        $QEMU_COMMON $QEMU_ACCEL $QEMU_DEBUG
 else
     qemu-system-${QEMU_ARCH} \
         -machine q35 \

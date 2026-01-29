@@ -1,4 +1,4 @@
-/**
+/** @file
   UEFI Snake Game
 
   Copyright (c) 2026 Alexis Lecam <alexis.lecam@hexaliker.fr>
@@ -28,23 +28,29 @@ UefiMain(
   EFI_LOADED_IMAGE_PROTOCOL   *LoadedImage;
   BOOLEAN                     Success;
 
-  Status = gBS->LocateProtocol(
+  Status = gBS->OpenProtocol(
+    ImageHandle,
     &gEfiLoadedImageProtocolGuid,
+    (VOID **)&LoadedImage,
+    gImageHandle,
     NULL,
-    (VOID **)&LoadedImage
+    EFI_OPEN_PROTOCOL_GET_PROTOCOL
   );
 
   if (EFI_ERROR(Status)) {
-    ASSERT(EFI_ERROR(Status));
-    return EFI_ABORTED;
+    Status = EFI_ABORTED;
+    goto light_cleanup;
   }
 
   Print(L"LoadedImage->ImageBase: 0x%p\n", LoadedImage->ImageBase);
+DEBUG_CODE_BEGIN();
+  gBS->Stall(1e6); // Wait until the debugger loads the symbols
+DEBUG_CODE_END();
 
   Success = InitGfx();
   if (!Success) {
-    ASSERT(!Success);
-    return EFI_ABORTED;
+    Status = EFI_ABORTED;
+    goto light_cleanup;
   }
 
   Print(L"Graphics initialized...\n");
@@ -69,16 +75,25 @@ UefiMain(
   );
 
   if (!Success) {
-    ASSERT(!Success);
-    return EFI_ABORTED;
+    Status = EFI_ABORTED;
+    goto cleanup;
   }
 
-  gBS->Stall(2e6); // 2s
+  gBS->Stall(2e6);
   PresentBackbuffer();
-  gBS->Stall(10e6); // 10s
+  gBS->Stall(5e6);
 
   ClearBackbuffer();
-  DeinitGfx();
 
-  return EFI_SUCCESS;
+cleanup:
+  DeinitGfx();
+light_cleanup:
+  gBS->CloseProtocol(
+    ImageHandle,
+    &gEfiLoadedImageProtocolGuid,
+    gImageHandle,
+    NULL
+  );
+
+  return Status;
 }

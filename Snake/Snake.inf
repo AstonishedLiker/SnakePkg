@@ -23,6 +23,7 @@
 [LibraryClasses]
   UefiApplicationEntryPoint
   UefiLib
+  DebugLib
   UefiBootServicesTableLib
   MemoryAllocationLib
   BaseMemoryLib
