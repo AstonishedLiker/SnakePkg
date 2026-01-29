@@ -44,8 +44,8 @@ UefiMain(
 
   Print(L"LoadedImage->ImageBase: 0x%p\n", LoadedImage->ImageBase);
 DEBUG_CODE_BEGIN();
+  gBS->Stall(1e6);
   Print(L"NOTE: Compiled in DEBUG mode\n");
-  gBS->Stall(2e6); // Wait until the debugger loads the symbols
 DEBUG_CODE_END();
 
   Success = InitGfx();
