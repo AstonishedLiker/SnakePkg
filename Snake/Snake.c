@@ -44,7 +44,6 @@ UefiMain(
 
   Print(L"LoadedImage->ImageBase: 0x%p\n", LoadedImage->ImageBase);
 DEBUG_CODE_BEGIN();
-  gBS->Stall(1e6);
   Print(L"NOTE: Compiled in DEBUG mode\n");
 DEBUG_CODE_END();
 
