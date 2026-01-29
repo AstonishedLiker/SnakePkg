@@ -4,11 +4,11 @@
         {
             "label": "Launch QEMU with Debug",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/run.sh",
+            "command": "${workspaceFolder}/Scripts/run.sh",
             "args": ["X64", "DEBUG"],
             "isBackground": true,
             "options": {
-                "cwd": "${workspaceFolder}/scripts"
+                "cwd": "${workspaceFolder}/Scripts"
             },
             "problemMatcher": {
                 "pattern": {
