@@ -93,12 +93,12 @@ DrawImageToBackbuffer(
   IN BOOLEAN            IsAnchorMiddle
 )
 {
-  UINTN                         ActualX;
-  UINTN                         ActualY;
-  UINTN                         y;
-  UINTN                         x;
-  UINTN                         ScreenX;
-  UINTN                         ScreenY;
+  UINTN   ActualX;
+  UINTN   ActualY;
+  UINTN   y;
+  UINTN   x;
+  UINTN   ScreenX;
+  UINTN   ScreenY;
 
   ActualX = (!IsAnchorMiddle) ? DestinationX : (gGopInfo->HorizontalResolution / 2) - (Image->Width / 2);
   ActualY = (!IsAnchorMiddle) ? DestinationY : (gGopInfo->VerticalResolution / 2) - (Image->Height / 2);
@@ -121,7 +121,7 @@ PresentBackbuffer(
   VOID
 )
 {
-  EFI_STATUS Status;
+  EFI_STATUS  Status;
 
   Status = gGop->Blt(
     gGop,

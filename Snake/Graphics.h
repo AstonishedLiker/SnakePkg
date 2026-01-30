@@ -38,10 +38,10 @@ DrawRectangleToBackbuffer(
 
 VOID
 DrawImageToBackbuffer(
-  IN EFI_IMAGE_INPUT     *Image,
-  IN UINTN              DestinationX,
-  IN UINTN              DestinationY,
-  IN BOOLEAN            IsAnchorMiddle
+  IN EFI_IMAGE_INPUT  *Image,
+  IN UINTN            DestinationX,
+  IN UINTN            DestinationY,
+  IN BOOLEAN          IsAnchorMiddle
 );
 
 VOID
