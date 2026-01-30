@@ -91,8 +91,7 @@ This project builds upon and uses components from the EDK-II project, which is l
 
 - EDK2 libraries
 - Build system and tooling
-- The [TianoCore bitmap](./Snake/Assets/Logo.bmp.h) (cf. [`MdeModulePkg/Logo/Logo.bmp`](https://github.com/tianocore/edk2/blob/master/MdeModulePkg/Logo/Logo.bmp))
-- `TranslateBmpToGopBlt()` function from `BaseBmpSupportLib`, declared in [`Snake/BmpSupport.h`](./Snake/BmpSupport.h)
+- The [TianoCore bitmap](./Snake/Assets/Logo.bmp) (from [`MdeModulePkg/Logo/Logo.bmp`](https://github.com/tianocore/edk2/blob/master/MdeModulePkg/Logo/Logo.bmp))
 
 See [LICENSE.edk2](LICENSE.edk2) for the full BSD-2-Clause-Patent License text.
 
