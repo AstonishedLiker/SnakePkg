@@ -86,9 +86,11 @@ lldb
 
 #### With VS Code
 
-Select the `64-bit UEFI Debug App` launch target in the Debug Pane, which can be accessed in the VS Code sidebar.
+- Install the [LLVM DAP](https://open-vsx.org/extension/llvm-vs-code-extensions/lldb-dap) VS Code extension.
+- Select the `64-bit UEFI Debug App` launch target in the Debug Pane, which can be accessed in the VS Code sidebar.
+- The symbols should automatically resolve via [`./lldb_uefi_helper.py`](./lldb_uefi_helper.py).
 
-The symbols should automatically resolve via [`./lldb_uefi_helper.py`](./lldb_uefi_helper.py).
+**NOTE:** Breakpoints before the `ImageBase` is outputted to `ConOut` won't be hit!
 
 ## License
 
