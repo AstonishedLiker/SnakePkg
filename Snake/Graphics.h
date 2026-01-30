@@ -15,6 +15,7 @@
 #include <Library/UefiBootServicesTableLib.h>
 
 #include <Protocol/GraphicsOutput.h>
+#include <Protocol/HiiImage.h>
 
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL           *gGop;
 extern EFI_GRAPHICS_OUTPUT_MODE_INFORMATION   *gGopInfo;
@@ -35,16 +36,15 @@ DrawRectangleToBackbuffer(
   IN UINTN  DestinationY
 );
 
-BOOLEAN
-DrawBmpToBackbuffer(
-  IN VOID     *BmpImage,
-  IN UINTN    BmpImageLen,
-  IN UINTN    DestinationX,
-  IN UINTN    DestinationY,
-  IN BOOLEAN  IsAnchorMiddle
+VOID
+DrawImageToBackbuffer(
+  IN EFI_IMAGE_INPUT     *Image,
+  IN UINTN              DestinationX,
+  IN UINTN              DestinationY,
+  IN BOOLEAN            IsAnchorMiddle
 );
 
-BOOLEAN
+VOID
 PresentBackbuffer(
   VOID
 );

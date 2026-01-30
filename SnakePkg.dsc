@@ -27,13 +27,9 @@
   DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
   UefiRuntimeServicesTableLib|MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.inf
   StackCheckLib|MdePkg/Library/StackCheckLibNull/StackCheckLibNull.inf
-  SafeIntLib|MdePkg/Library/BaseSafeIntLib/BaseSafeIntLib.inf
 
 [Components]
-  SnakePkg/Snake/Snake.inf { # Required for including TranslateBmpToGopBlt (which is in local header BmpSupport.h)
-    <LibraryClasses>
-      NULL|MdeModulePkg/Library/BaseBmpSupportLib/BaseBmpSupportLib.inf
-  }
+  SnakePkg/Snake/Snake.inf
 
 [PcdsFixedAtBuild]
 !if $(TARGET) == DEBUG

@@ -13,8 +13,9 @@
 #include <Library/UefiBootServicesTableLib.h>
 
 #include <Protocol/LoadedImage.h>
+#include <Protocol/HiiImage.h>
+#include <Protocol/HiiDatabase.h>
 
-#include "Assets/Logo.bmp.h"
 #include "Graphics.h"
 
 EFI_STATUS
@@ -24,36 +25,70 @@ UefiMain(
   IN EFI_SYSTEM_TABLE  *SystemTable
 )
 {
-  EFI_STATUS                  Status;
-  EFI_LOADED_IMAGE_PROTOCOL   *LoadedImage;
-  BOOLEAN                     Success;
+  EFI_STATUS                    Status;
+  EFI_LOADED_IMAGE_PROTOCOL     *LoadedImage;
+  EFI_HII_PACKAGE_LIST_HEADER   *PackageListHeader;
+  EFI_HII_IMAGE_PROTOCOL        *HiiImage;
+  EFI_HII_DATABASE_PROTOCOL     *HiiDatabase;
+  EFI_HII_HANDLE                HiiHandle;
+  BOOLEAN                       Success;
+  EFI_IMAGE_INPUT               Image;
+
+  Success = InitGfx();
+  ASSERT(Success);
 
   Status = gBS->OpenProtocol(
     ImageHandle,
     &gEfiLoadedImageProtocolGuid,
     (VOID **)&LoadedImage,
-    gImageHandle,
+    ImageHandle,
     NULL,
     EFI_OPEN_PROTOCOL_GET_PROTOCOL
   );
 
-  if (EFI_ERROR(Status)) {
-    Status = EFI_ABORTED;
-    goto light_cleanup;
-  }
+  ASSERT_EFI_ERROR(Status);
+
+  Status = gBS->OpenProtocol (
+    ImageHandle,
+    &gEfiHiiPackageListProtocolGuid,
+    (VOID **)&PackageListHeader,
+    ImageHandle,
+    NULL,
+    EFI_OPEN_PROTOCOL_GET_PROTOCOL
+  );
+
+  ASSERT_EFI_ERROR(Status);
 
   Print(L"LoadedImage->ImageBase: 0x%p\n", LoadedImage->ImageBase);
-DEBUG_CODE_BEGIN();
-  Print(L"NOTE: Compiled in DEBUG mode\n");
-DEBUG_CODE_END();
+  DEBUG_CODE(gBS->Stall(1e6);); // Wait until debugger properly attaches
 
-  Success = InitGfx();
-  if (!Success) {
-    Status = EFI_ABORTED;
-    goto light_cleanup;
-  }
+  Status = gBS->LocateProtocol(
+    &gEfiHiiImageProtocolGuid,
+    NULL,
+    (VOID **)&HiiImage
+  );
+  ASSERT_EFI_ERROR(Status);
 
-  Print(L"Graphics initialized...\n");
+  Status = gBS->LocateProtocol(
+    &gEfiHiiDatabaseProtocolGuid,
+    NULL,
+    (VOID **)&HiiDatabase
+  );
+  ASSERT_EFI_ERROR(Status);
+
+  Print(L"Protocols located & opened...\n");
+
+  Status = HiiDatabase->NewPackageList(
+    HiiDatabase,
+    PackageListHeader,
+    NULL,
+    &HiiHandle
+  );
+  ASSERT_EFI_ERROR(Status);
+  ASSERT(HiiHandle);
+
+  Status = HiiImage->GetImage(HiiImage, HiiHandle, IMAGE_TOKEN(IMG_LOGO), &Image);
+  ASSERT_EFI_ERROR(Status);
 
   DrawRectangleToBackbuffer(
     60, 60, 60,
@@ -66,18 +101,12 @@ DEBUG_CODE_END();
   Print(L"Info->HorizontalResolution: %d\n", gGopInfo->HorizontalResolution);
   Print(L"Info->VerticalResolution: %d\n", gGopInfo->VerticalResolution);
 
-  Success = DrawBmpToBackbuffer(
-    LogoBmp,
-    sizeof(LogoBmp),
+  DrawImageToBackbuffer(
+    &Image,
     (gGopInfo->HorizontalResolution / 2),
     (gGopInfo->VerticalResolution / 2),
     TRUE
   );
-
-  if (!Success) {
-    Status = EFI_ABORTED;
-    goto cleanup;
-  }
 
   gBS->Stall(2e6);
   PresentBackbuffer();
@@ -85,15 +114,24 @@ DEBUG_CODE_END();
 
   ClearBackbuffer();
 
-cleanup:
+  // Cleanup
   DeinitGfx();
-light_cleanup:
-  gBS->CloseProtocol(
+
+  Status = gBS->CloseProtocol(
     ImageHandle,
     &gEfiLoadedImageProtocolGuid,
-    gImageHandle,
+    ImageHandle,
     NULL
   );
+  ASSERT_EFI_ERROR(Status);
+
+  Status = gBS->CloseProtocol(
+    ImageHandle,
+    &gEfiHiiPackageListProtocolGuid,
+    ImageHandle,
+    NULL
+  );
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

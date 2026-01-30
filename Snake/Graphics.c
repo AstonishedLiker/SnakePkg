@@ -10,7 +10,6 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/MemoryAllocationLib.h>
 
-#include "BmpSupport.h"
 #include "Graphics.h"
 
 EFI_GRAPHICS_OUTPUT_PROTOCOL            *gGop           = NULL;
@@ -26,10 +25,6 @@ typedef struct {
   UINTN                         Height;
 } BMP_CACHE_ENTRY;
 
-#define BMP_CACHE_SIZE 5
-STATIC BMP_CACHE_ENTRY mBmpCache[BMP_CACHE_SIZE];
-STATIC UINTN           mBmpCacheCount = 0;
-
 BOOLEAN
 InitGfx(
   VOID
@@ -42,25 +37,18 @@ InitGfx(
     NULL,
     (VOID **)&gGop
   );
-
-  if (EFI_ERROR(Status)) {
-    Print(L"%a: Failed to locate GOP: %r\n", __FUNCTION__, Status);
-    return FALSE;
-  }
+  ASSERT_EFI_ERROR(Status);
 
   gGopInfo = gGop->Mode->Info;
-  gBackBufferLen =
-    gGopInfo->HorizontalResolution * gGopInfo->VerticalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
+  gBackBufferLen = gGopInfo->HorizontalResolution * gGopInfo->VerticalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
   gBackBuffer = AllocatePool(gBackBufferLen);
 
   if (!gBackBuffer) {
     Print(L"%a: AllocatePool returned NULL\n", __FUNCTION__);
+    CpuBreakpoint();
   }
 
-  mBmpCacheCount = 0;
-
   ZeroMem(gBackBuffer, gBackBufferLen);
-  ZeroMem(mBmpCache, sizeof(mBmpCache));
 
   return TRUE;
 }
@@ -105,62 +93,14 @@ DrawRectangleToBackbuffer(
   }
 }
 
-STATIC
-BMP_CACHE_ENTRY *
-FindBmpInCache(
-  IN VOID *BmpPointer
+VOID
+DrawImageToBackbuffer(
+  IN EFI_IMAGE_INPUT     *Image,
+  IN UINTN              DestinationX,
+  IN UINTN              DestinationY,
+  IN BOOLEAN            IsAnchorMiddle
 )
 {
-  for (UINTN i = 0; i < mBmpCacheCount; i++) {
-    if (mBmpCache[i].BmpPointer == BmpPointer) {
-      return &mBmpCache[i];
-    }
-  }
-  return NULL;
-}
-
-STATIC
-BOOLEAN
-AddBmpToCache(
-  IN VOID                          *BmpPointer,
-  IN EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer,
-  IN UINTN                         BltBufferSize,
-  IN UINTN                         Width,
-  IN UINTN                         Height
-)
-{
-  // For the amount of images I have, I don't want to implement any eviction algorithm... Would be overengineering.
-  if (mBmpCacheCount >= BMP_CACHE_SIZE) {
-    Print(L"%a: Warning: BMP cache is full\n", __FUNCTION__);
-    return FALSE;
-  }
-
-  mBmpCache[mBmpCacheCount].BmpPointer = BmpPointer;
-  mBmpCache[mBmpCacheCount].BltBuffer = BltBuffer;
-  mBmpCache[mBmpCacheCount].BltBufferSize = BltBufferSize;
-  mBmpCache[mBmpCacheCount].Width = Width;
-  mBmpCache[mBmpCacheCount].Height = Height;
-  mBmpCacheCount++;
-
-  return TRUE;
-}
-
-BOOLEAN
-DrawBmpToBackbuffer(
-  IN VOID     *BmpImage,
-  IN UINTN    BmpImageLen,
-  IN UINTN    DestinationX,
-  IN UINTN    DestinationY,
-  IN BOOLEAN  IsAnchorMiddle
-)
-{
-  EFI_STATUS                    Status;
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer;
-  UINTN                         BltBufferSize;
-  UINTN                         BmpHeight;
-  UINTN                         BmpWidth;
-  BMP_CACHE_ENTRY               *CacheEntry;
-  BOOLEAN                       FromCache;
   UINTN                         ActualX;
   UINTN                         ActualY;
   UINTN                         y;
@@ -168,59 +108,23 @@ DrawBmpToBackbuffer(
   UINTN                         ScreenX;
   UINTN                         ScreenY;
 
-  CacheEntry = FindBmpInCache(BmpImage);
+  ActualX = (!IsAnchorMiddle) ? DestinationX : (gGopInfo->HorizontalResolution / 2) - (Image->Width / 2);
+  ActualY = (!IsAnchorMiddle) ? DestinationY : (gGopInfo->VerticalResolution / 2) - (Image->Height / 2);
 
-  if (CacheEntry != NULL) {
-    BltBuffer = CacheEntry->BltBuffer;
-    BltBufferSize = CacheEntry->BltBufferSize;
-    BmpWidth = CacheEntry->Width;
-    BmpHeight = CacheEntry->Height;
-    FromCache = TRUE;
-  } else {
-    Status = TranslateBmpToGopBlt(
-      BmpImage,
-      BmpImageLen,
-      &BltBuffer,
-      &BltBufferSize,
-      &BmpHeight,
-      &BmpWidth
-    );
-
-    if (EFI_ERROR(Status)) {
-      Print(L"%a: Failed to translate BMP to GOP blt: %r\n", __FUNCTION__, Status);
-      return FALSE;
-    }
-
-    if (!AddBmpToCache(BmpImage, BltBuffer, BltBufferSize, BmpWidth, BmpHeight)) {
-      FromCache = FALSE;
-    } else {
-      FromCache = TRUE;
-    }
-  }
-
-  ActualX = (!IsAnchorMiddle) ? DestinationX : (gGopInfo->HorizontalResolution / 2) - (BmpWidth / 2);
-  ActualY = (!IsAnchorMiddle) ? DestinationY : (gGopInfo->VerticalResolution / 2) - (BmpHeight / 2);
-
-  for (y = 0; y < BmpHeight; y++) {
-    for (x = 0; x < BmpWidth; x++) {
+  for (y = 0; y < Image->Height; y++) {
+    for (x = 0; x < Image->Width; x++) {
       ScreenX = ActualX + x;
       ScreenY = ActualY + y;
 
       ASSERT(ScreenX < gGopInfo->HorizontalResolution && 
         ScreenY < gGopInfo->VerticalResolution);
 
-      gBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = BltBuffer[y * BmpWidth + x];
+      gBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = Image->Bitmap[y * Image->Width + x];
     }
   }
-
-  if (!FromCache) {
-    FreePool(BltBuffer);
-  }
-
-  return !EFI_ERROR(Status);
 }
 
-BOOLEAN
+VOID
 PresentBackbuffer(
   VOID
 )
@@ -237,12 +141,7 @@ PresentBackbuffer(
     0
   );
 
-  if (EFI_ERROR(Status)) {
-    Print(L"%a: Failed to Blt: %r\n", __FUNCTION__, Status);
-    return FALSE;
-  }
-
-  return TRUE;
+  ASSERT_EFI_ERROR(Status);
 }
 
 VOID
@@ -262,17 +161,6 @@ DeinitGfx(
   VOID
 )
 {
-  UINTN i;
-
   FreePool(gBackBuffer);
   gBackBufferLen = 0;
-
-  for (i = 0; i < mBmpCacheCount; i++) {
-    if (mBmpCache[i].BltBuffer != NULL) {
-      FreePool(mBmpCache[i].BltBuffer);
-      mBmpCache[i].BltBuffer = NULL;
-    }
-  }
-
-  mBmpCacheCount = 0;
 }

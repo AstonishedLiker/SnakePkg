@@ -1,24 +1,29 @@
 [Defines]
-  INF_VERSION            = 1.25
-  BASE_NAME              = Snake
-  FILE_GUID              = 125FBE2E-8095-484D-BB6F-465262530D87
-  MODULE_TYPE            = UEFI_APPLICATION
-  VERSION_STRING         = 1.0
-  ENTRY_POINT            = UefiMain
+  INF_VERSION                     = 1.25
+  BASE_NAME                       = Snake
+  FILE_GUID                       = 125FBE2E-8095-484D-BB6F-465262530D87
+  MODULE_TYPE                     = UEFI_APPLICATION
+  VERSION_STRING                  = 1.0
+  ENTRY_POINT                     = UefiMain
+  UEFI_HII_RESOURCE_SECTION       = TRUE # VERY IMPORTANT
 
 [Sources]
-  Assets/Logo.bmp.h
-  BmpSupport.h
+  Assets/Logo.bmp
+  Assets/Logo.idf
   Graphics.h
   Graphics.c
   Snake.c
 
 [Packages]
   MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
 
 [Protocols]
-  gEfiGraphicsOutputProtocolGuid ## CONSUMES # For graphics
-  gEfiLoadedImageProtocolGuid ## CONSUMES
+  gEfiGraphicsOutputProtocolGuid      ## CONSUMES # For graphics
+  gEfiHiiPackageListProtocolGuid      ## CONSUMES # For retrieving the HII resources section
+  gEfiLoadedImageProtocolGuid         ## CONSUMES
+  gEfiHiiDatabaseProtocolGuid         ## CONSUMES ## PRODUCES # To add the Tianocore image
+  gEfiHiiImageProtocolGuid            ## CONSUMES # To get the Tianocore image
 
 [LibraryClasses]
   UefiApplicationEntryPoint
