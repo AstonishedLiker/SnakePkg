@@ -17,14 +17,6 @@ EFI_GRAPHICS_OUTPUT_MODE_INFORMATION    *gGopInfo       = NULL;
 EFI_GRAPHICS_OUTPUT_BLT_PIXEL           *gBackBuffer    = NULL;
 UINTN                                   gBackBufferLen;
 
-typedef struct {
-  VOID                          *BmpPointer;
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer;
-  UINTN                         BltBufferSize;
-  UINTN                         Width;
-  UINTN                         Height;
-} BMP_CACHE_ENTRY;
-
 BOOLEAN
 InitGfx(
   VOID
