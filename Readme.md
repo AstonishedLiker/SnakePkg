@@ -58,7 +58,6 @@ cd ./Scripts
 
 # Examples
 ./run.sh DEBUG X64
-./run.sh DEBUG IA32
 ./run.sh RELEASE X64
 ```
 
@@ -71,9 +70,25 @@ cd ./Scripts
 ```
 
 The compiled `.efi` file will be located at:
+
 ```
 Build/SnakePkg/DEBUG_GCC/X64/Snake.efi
 ```
+
+### 4. Debugging
+
+#### With the command-line
+
+```bash
+./run.sh DEBUG X64 # Only X64 builds are supported for debugging
+lldb
+```
+
+#### With VS Code
+
+Select the `64-bit UEFI Debug App` launch target in the Debug Pane, which can be accessed in the VS Code sidebar.
+
+The symbols should automatically resolve via [`./lldb_uefi_helper.py`](./lldb_uefi_helper.py).
 
 ## License
 
