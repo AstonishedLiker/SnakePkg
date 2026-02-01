@@ -18,11 +18,11 @@
 
 EFI_GRAPHICS_OUTPUT_PROTOCOL            *gGop;
 EFI_GRAPHICS_OUTPUT_MODE_INFORMATION    *gGopInfo;
-STATIC EFI_GRAPHICS_OUTPUT_BLT_PIXEL    *gBackBuffer;
+STATIC EFI_GRAPHICS_OUTPUT_BLT_PIXEL    *mBackBuffer;
 EFI_HII_IMAGE_PROTOCOL                  *gHiiImage;
 EFI_HII_HANDLE                          gHiiHandle;
 STATIC EFI_HII_DATABASE_PROTOCOL        *mHiiDatabase;
-STATIC UINTN                            gBackBufferLen;
+STATIC UINTN                            mBackBufferLen;
 UINTN                                   gMiddleScreenX;
 UINTN                                   gMiddleScreenY;
 
@@ -74,9 +74,9 @@ InitGfx(
   ASSERT_EFI_ERROR(Status);
 
   gGopInfo = gGop->Mode->Info;
-  gBackBufferLen = gGopInfo->HorizontalResolution * gGopInfo->VerticalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
-  gBackBuffer = AllocateZeroPool(gBackBufferLen);
-  ASSERT(gBackBuffer);
+  mBackBufferLen = gGopInfo->HorizontalResolution * gGopInfo->VerticalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
+  mBackBuffer = AllocateZeroPool(mBackBufferLen);
+  ASSERT(mBackBuffer);
 
   gMiddleScreenX = (gGopInfo->HorizontalResolution / 2) - 1;
   gMiddleScreenY = (gGopInfo->VerticalResolution / 2) - 1;
@@ -117,9 +117,9 @@ DrawRectangleToBackbuffer(
         ScreenY < gGopInfo->VerticalResolution);
 
       Index = ScreenY * gGopInfo->HorizontalResolution + ScreenX;
-      ASSERT(Index * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL) < gBackBufferLen);
+      ASSERT(Index * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL) < mBackBufferLen);
 
-      gBackBuffer[Index] = Pixel;
+      mBackBuffer[Index] = Pixel;
     }
   }
 }
@@ -150,7 +150,7 @@ DrawImageToBackbuffer(
       ASSERT(ScreenX < gGopInfo->HorizontalResolution && 
         ScreenY < gGopInfo->VerticalResolution);
 
-      gBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = Image->Bitmap[y * Image->Width + x];
+      mBackBuffer[ScreenY * gGopInfo->HorizontalResolution + ScreenX] = Image->Bitmap[y * Image->Width + x];
     }
   }
 }
@@ -164,7 +164,7 @@ PresentBackbuffer(
 
   Status = gGop->Blt(
     gGop,
-    gBackBuffer,
+    mBackBuffer,
     EfiBltBufferToVideo,
     0, 0,
     0, 0,
@@ -209,6 +209,6 @@ DeinitGfx(
   );
   ASSERT_EFI_ERROR(Status);
 
-  FreePool(gBackBuffer);
-  gBackBufferLen = 0;
+  FreePool(mBackBuffer);
+  mBackBufferLen = 0;
 }
