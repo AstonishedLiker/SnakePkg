@@ -5,8 +5,8 @@ The classic Snake game reimagined as a UEFI Application
 
 *Made for fun and showcasing knowledge of EDK2 and UEFI development*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![EDK2](https://img.shields.io/badge/EDK2-BSD--2--Clause--Patent-blue.svg)](LICENSE.edk2)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](License)
+[![EDK2](https://img.shields.io/badge/EDK2-BSD--2--Clause--Patent-blue.svg)](License.edk2)
 [![Platform](https://img.shields.io/badge/platform-UEFI-brightgreen.svg)]()
 [![Architecture](https://img.shields.io/badge/arch-X64%20%7C%20IA32-orange.svg)]()
 
@@ -131,7 +131,7 @@ This project uses a dual-license approach:
 
 The Snake game application code written for this project is licensed under the **MIT License**.
 
-See [LICENSE](LICENSE) for the full MIT License text.
+See [the `License` file](./License) for the full MIT License text.
 
 ### EDK2 Components (BSD-2-Clause-Patent License)
 
@@ -141,7 +141,7 @@ This project builds upon and uses components from the EDK-II project, which is l
 - Build system and tooling
 - The [TianoCore bitmap](./Snake/Assets/Logo.bmp) (from [`MdeModulePkg/Logo/Logo.bmp`](https://github.com/tianocore/edk2/blob/master/MdeModulePkg/Logo/Logo.bmp))
 
-See [LICENSE.edk2](LICENSE.edk2) for the full BSD-2-Clause-Patent License text.
+See [the `License.edk2` file](./License.edk2) for the full BSD-2-Clause-Patent License text.
 
 ## Acknowledgments
 
