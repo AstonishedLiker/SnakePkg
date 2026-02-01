@@ -41,12 +41,10 @@ You'll need a working EDK2 build environment. Follow the steps below.
 
 ### 1. Running it on real hardware
 
-#### Prerequisites
+#### Prerequisites
 
 - A UEFI-compliant device, with a USB port
 - A FAT32-formatted USB storage device (thumbstick, disk, ...)
-
----
 
 #### Steps
 
@@ -54,12 +52,12 @@ You'll need a working EDK2 build environment. Follow the steps below.
 2. Rename `SnakeX64.efi`/`SnakeIA32.efi` to `BOOTX64.EFI`/`BOOTIA32.EFI` (again, depending if your CPU is 32-bit or 64-bit)
 3. Create a folder named `EFI` at the root of your FAT32-formatted USB storage device
 4. Inside that newly-created folder, create another folder named `BOOT`
-5. Move the `BOOTX64.EFI`/`BOOTIA32.EFI` to the `BOOT` folder
-    - The file should be at `USB Storage Device/EFI/BOOT/BOOTX64.EFI` or `USB Storage Device/EFI/BOOT/BOOTIA32.EFI`
+5. Move the `BOOT<ARCH>.EFI` to the `BOOT` folder
+    - The file should be located at `USB Storage Device/EFI/BOOT/`
 6. Reboot your PC, then mash the `F12` key to go to the boot menu
 7. Select your USB storage device from the list, and enjoy!
 
-**NOTE:** If it doesn't work, please open an issue and list your PC/Motherboard model, along with its BIOS version. Thanks!
+**NOTE:** If the application doesn't work, please open an issue and list your PC/Motherboard model, along with its BIOS version. Thanks!
 
 ### 2. Clone and Setup
 
