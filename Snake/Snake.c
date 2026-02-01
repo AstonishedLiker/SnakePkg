@@ -67,6 +67,9 @@ UefiMain(
   );
   ASSERT_EFI_ERROR(Status);
 
+  Print(L"Reseting system in 4 seconds!");
+  gBS->Stall(4e6);
+
   gRT->ResetSystem(EfiResetWarm, EFI_SUCCESS, 0, NULL);
   CpuDeadLoop();
 

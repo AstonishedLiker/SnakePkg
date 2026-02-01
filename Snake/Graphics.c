@@ -21,6 +21,7 @@ EFI_GRAPHICS_OUTPUT_MODE_INFORMATION    *gGopInfo;
 STATIC EFI_GRAPHICS_OUTPUT_BLT_PIXEL    *gBackBuffer;
 EFI_HII_IMAGE_PROTOCOL                  *gHiiImage;
 EFI_HII_HANDLE                          gHiiHandle;
+STATIC EFI_HII_DATABASE_PROTOCOL        *mHiiDatabase;
 STATIC UINTN                            gBackBufferLen;
 UINTN                                   gMiddleScreenX;
 UINTN                                   gMiddleScreenY;
@@ -32,7 +33,6 @@ InitGfx(
 {
   EFI_STATUS Status;
   EFI_HII_PACKAGE_LIST_HEADER   *PackageListHeader;
-  EFI_HII_DATABASE_PROTOCOL     *HiiDatabase;
 
   Status = gBS->OpenProtocol (
     gImageHandle,
@@ -54,7 +54,7 @@ InitGfx(
   Status = gBS->LocateProtocol(
     &gEfiHiiDatabaseProtocolGuid,
     NULL,
-    (VOID **)&HiiDatabase
+    (VOID **)&mHiiDatabase
   );
   ASSERT_EFI_ERROR(Status);
 
@@ -65,8 +65,8 @@ InitGfx(
   );
   ASSERT_EFI_ERROR(Status);
 
-  Status = HiiDatabase->NewPackageList(
-    HiiDatabase,
+  Status = mHiiDatabase->NewPackageList(
+    mHiiDatabase,
     PackageListHeader,
     NULL,
     &gHiiHandle
@@ -193,6 +193,13 @@ DeinitGfx(
 )
 {
   EFI_STATUS    Status;
+
+  // Important!
+  Status = mHiiDatabase->RemovePackageList(
+    mHiiDatabase,
+    gHiiHandle
+  );
+  ASSERT_EFI_ERROR(Status);
 
   Status = gBS->CloseProtocol(
     gImageHandle,

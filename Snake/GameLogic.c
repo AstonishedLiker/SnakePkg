@@ -10,7 +10,7 @@
 #include "GameLogic.h"
 #include "Graphics.h"
 
-STATIC UINT64             mRngState = 13371337;
+STATIC UINT64             mRngState = 13371337; // I don't want to make it random per launch
 STATIC GRID_MATRIX        mGrid;
 STATIC SNAKE_STATE        mSnake;
 STATIC UINT32             mScore;
@@ -337,7 +337,7 @@ RunGameLogic(
 )
 {
   EFI_INPUT_KEY       Key;
-  DIRECTION_VECTOR    Direction = RelativeUp;
+  DIRECTION_VECTOR    Direction = RelativeRight;
   DIRECTION_VECTOR    RequestedDirection;
 
   InitSnake();
@@ -365,18 +365,16 @@ RunGameLogic(
     }
 
     if (!UpdateSnake(Direction)) {
-      Print(L"\nGame Over! You died!\nExiting in 4 seconds...\n");
-      gBS->Stall(4e6);
+      Print(L"\nGame Over! You died!\n");
       return;
     }
 
     DrawScene();
     PresentBackbuffer();
 
-    Print(L"\n\nScore: %d\nDirection Vector: %s\n", mScore, TranslateDirectionToString(Direction));
+    Print(L"\n\nScore: %d\nDirection Vector: %s\n\n\nPress [ESC] to quit\n", mScore, TranslateDirectionToString(Direction));
     if (mSnake.Length == GRID_CELL_COUNT) {
-      Print(L"Congratulations! You've won!\nFun fact: I, Alexis, have never beat this (for now!)\nExiting in 4 seconds...\n");
-      gBS->Stall(4e6);
+      Print(L"Congratulations! You've won! Now you can flex on all your friends that you've beat Snake running under UEFI :P\n");
       return;
     }
 
