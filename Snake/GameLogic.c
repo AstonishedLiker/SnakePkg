@@ -346,7 +346,6 @@ RunGameLogic(
 
   while (TRUE) {
     QueryLastKeystroke(&Key);
-    QueryLastKeystroke(&Key);
     if (Key.ScanCode == SCAN_ESC) {
       return;
     }
