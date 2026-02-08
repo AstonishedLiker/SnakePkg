@@ -342,8 +342,6 @@ RunGameLogic(
   InitSnake();
   SpawnApple();
 
-  //mScore = GRID_CELL_COUNT * 100;
-
   while (TRUE) {
     QueryLastKeystroke(&Key);
     if (Key.ScanCode == SCAN_ESC) {
