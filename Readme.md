@@ -9,10 +9,8 @@ The classic Snake game reimagined as a UEFI Application
 [![Platform](https://img.shields.io/badge/platform-UEFI-brightgreen.svg)]()
 [![Architecture](https://img.shields.io/badge/arch-X64%20%7C%20IA32-orange.svg)]()
 
-<video controls>
-  <source src="https://raw.githubusercontent.com/AstonishedLiker/SnakePkg/refs/heads/main/.github/snakepkg_on_thinkpad.mp4" type="video/mp4">
-  Your browser doesn't seem to support embedded videos!
-</video>
+_SnakePkg running on real hardware:_
+<video src="https://raw.githubusercontent.com/AstonishedLiker/SnakePkg/refs/heads/main/.github/snakepkg_on_thinkpad.mp4"></video>
 
 <br>
 
