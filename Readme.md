@@ -1,6 +1,5 @@
 # 🐍 SnakePkg
 
-
 The classic Snake game reimagined as a UEFI Application
 
 *Made for fun and showcasing knowledge of EDK2 and UEFI development*
@@ -10,6 +9,21 @@ The classic Snake game reimagined as a UEFI Application
 [![Platform](https://img.shields.io/badge/platform-UEFI-brightgreen.svg)]()
 [![Architecture](https://img.shields.io/badge/arch-X64%20%7C%20IA32-orange.svg)]()
 
+<video controls>
+  <source src="https://raw.githubusercontent.com/AstonishedLiker/SnakePkg/refs/heads/main/.github/snakepkg_on_thinkpad.mp4" type="video/mp4">
+  Your browser doesn't seem to support embedded videos!
+</video>
+
+<br>
+
+Linked blog entries:
+
+- **Part 1:** https://hexaliker.fr/posts/part-1-snake-in-uefi/ 
+  > _Seems crazy, right? Writing a game that runs before any operating system exists sounds complicated, obscure, and wildly impractical. So why would anyone bother?_
+- **Part 2:** https://hexaliker.fr/posts/part-2-snake-in-uefi/
+  > _With an overview of the UEFI boot process complete, we can finally start practicing!_
+- **Part 3:** https://hexaliker.fr/posts/part-3-snake-in-uefi/
+  > _Turning our idea into reality: debugging, graphics, and finally playing our UEFI Snake game!_
 
 ## Prerequisites
 
