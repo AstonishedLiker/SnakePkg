@@ -53,6 +53,9 @@ UefiMain(
   Print(L"Info->HorizontalResolution: %d\n", gGopInfo->HorizontalResolution);
   Print(L"Info->VerticalResolution: %d\n", gGopInfo->VerticalResolution);
 
+  Status = gBS->SetWatchdogTimer(0, 0, 0, NULL);
+  ASSERT_EFI_ERROR(Status);
+
   RunGameLogic();
 
   // Cleanup  
