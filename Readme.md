@@ -97,8 +97,8 @@ chmod +x run.sh snake_build.sh
 ```bash
 # Just compile without launching QEMU
 cd ./Scripts
-./build.sh RELEASE X64
-./build.sh RELEASE IA32
+./snake_build.sh RELEASE X64
+./snake_build.sh RELEASE IA32
 ```
 
 The compiled `.efi` file will be located at:
